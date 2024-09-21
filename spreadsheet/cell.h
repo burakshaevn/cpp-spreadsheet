@@ -1,16 +1,17 @@
-#pragma once
+﻿#pragma once
 
 #include "common.h"
 #include "formula.h"
-
-#include <functional>
+#include <utility>
 #include <unordered_set>
+#include <optional>  
+
 
 class Sheet;
 
 class Cell : public CellInterface {
 public:
-    Cell(Sheet& sheet);
+    explicit Cell(SheetInterface& sheet);
     ~Cell();
 
     void Set(std::string text);
@@ -18,19 +19,29 @@ public:
 
     Value GetValue() const override;
     std::string GetText() const override;
-    std::vector<Position> GetReferencedCells() const override;
+    std::vector<Position> GetReferencedCells() const override; 
 
-    bool IsReferenced() const;
+    void InvalidateCache();
+    bool IsCacheValid() const; 
+
+    // методы будут работать с зависимостями
+    void UpdateReferences(const std::vector<Position>& new_references);
+    void AddDependentCell(Position pos);
+    void RemoveDependentCell(Position pos);  
 
 private:
     class Impl;
     class EmptyImpl;
     class TextImpl;
     class FormulaImpl;
-
     std::unique_ptr<Impl> impl_;
 
-    // Добавьте поля и методы для связи с таблицей, проверки циклических 
-    // зависимостей, графа зависимостей и т. д.
+    // ссылка на лист для доступа к другим ячейкам
+    SheetInterface& sheet_;
 
+    // значение кэша
+    std::optional<Value> cache_;
+
+    std::vector<Position> referenced_cells_;   // // ячейки на которые ссылается эта ячейка
+    std::vector<Position> dependent_cells_;    // ячейки которые зависят от этой ячейки
 };
