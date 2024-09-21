@@ -1,4 +1,4 @@
-#include "cell.h"
+п»ї#include "cell.h"
 
 #include <cassert>
 #include <iostream>
@@ -29,7 +29,7 @@ public:
     explicit TextImpl(std::string text) : text_(std::move(text)) {}
 
     CellInterface::Value GetValue() const override {
-        if (!text_.empty() && text_.front() == ESCAPE_SIGN) {  // ESCAPE_SIGN должна быть определена
+        if (!text_.empty() && text_.front() == ESCAPE_SIGN) {  // ESCAPE_SIGN РґРѕР»Р¶РЅР° Р±С‹С‚СЊ РѕРїСЂРµРґРµР»РµРЅР°
             return text_.substr(1);
         }
         return text_;
@@ -50,17 +50,17 @@ public:
         if (expression.empty() || expression[0] != FORMULA_SIGN) {
             throw FormulaException("Invalid formula");
         }
-        // Парсинг формулы через функцию ParseFormula
+        // РџР°СЂСЃРёРЅРі С„РѕСЂРјСѓР»С‹ С‡РµСЂРµР· С„СѓРЅРєС†РёСЋ ParseFormula
         formula_ = ParseFormula(expression.substr(1));
     }
 
     CellInterface::Value GetValue() const override {
         if (!cache_) {
-            // Вычисляем значение формулы через Evaluate, передавая ссылку на таблицу
+            // Р’С‹С‡РёСЃР»СЏРµРј Р·РЅР°С‡РµРЅРёРµ С„РѕСЂРјСѓР»С‹ С‡РµСЂРµР· Evaluate, РїРµСЂРµРґР°РІР°СЏ СЃСЃС‹Р»РєСѓ РЅР° С‚Р°Р±Р»РёС†Сѓ
             cache_ = formula_->Evaluate(sheet_);
         }
 
-        // Возвращаем кэшированное значение
+        // Р’РѕР·РІСЂР°С‰Р°РµРј РєСЌС€РёСЂРѕРІР°РЅРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ
         if (std::holds_alternative<double>(*cache_)) {
             return std::get<double>(*cache_);
         }
@@ -73,7 +73,7 @@ public:
         return FORMULA_SIGN + formula_->GetExpression();
     }
 
-    // сброс кэша при изменениях
+    // СЃР±СЂРѕСЃ РєСЌС€Р° РїСЂРё РёР·РјРµРЅРµРЅРёСЏС…
     void InvalidateCache() {
         cache_.reset();
     }
@@ -84,8 +84,8 @@ public:
 
 private:
     std::unique_ptr<FormulaInterface> formula_;
-    const SheetInterface& sheet_; // ссылка на таблицу
-    mutable std::optional<std::variant<double, FormulaError>> cache_; // кеш результата вычислений
+    const SheetInterface& sheet_; // СЃСЃС‹Р»РєР° РЅР° С‚Р°Р±Р»РёС†Сѓ
+    mutable std::optional<std::variant<double, FormulaError>> cache_; // РєРµС€ СЂРµР·СѓР»СЊС‚Р°С‚Р° РІС‹С‡РёСЃР»РµРЅРёР№
 };
 
 Cell::~Cell() = default;
@@ -126,7 +126,7 @@ std::vector<Position> Cell::GetReferencedCells() const {
     return {};
 } 
 
-// методы будут работать с зависимостями
+// РјРµС‚РѕРґС‹ Р±СѓРґСѓС‚ СЂР°Р±РѕС‚Р°С‚СЊ СЃ Р·Р°РІРёСЃРёРјРѕСЃС‚СЏРјРё
 void Cell::InvalidateCache() {
     if (!cache_) {
         return;
@@ -158,10 +158,10 @@ void Cell::RemoveDependentCell(Position pos) {
         if (!dep_pos.IsValid() || !cell)
             continue;
 
-        // Ищем позицию в referenced_cells_
+        // РС‰РµРј РїРѕР·РёС†РёСЋ РІ referenced_cells_
         auto it = std::find(cell->referenced_cells_.begin(), cell->referenced_cells_.end(), pos);
         if (it != cell->referenced_cells_.end()) {
-            cell->referenced_cells_.erase(it);  // Удаляем элемент по итератору
+            cell->referenced_cells_.erase(it);  // РЈРґР°Р»СЏРµРј СЌР»РµРјРµРЅС‚ РїРѕ РёС‚РµСЂР°С‚РѕСЂСѓ
         }
     }
 }

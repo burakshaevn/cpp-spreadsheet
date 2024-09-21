@@ -1,4 +1,4 @@
-#include "common.h"
+ï»¿#include "common.h"
 
 #include <cctype>
 #include <sstream>
@@ -19,15 +19,15 @@ bool Position::operator<(const Position rhs) const {
     return (row < rhs.row) && (col < rhs.col);
 }
 
-// Ïðîâåðÿåò âàëèäíîñòü ïîçèöèè,
-// òî åñòü ÷òî ÿ÷åéêà(row, col) íå âûõîäèò çà îãðàíè÷åíèÿ íèæå è ÷òî çíà÷åíèÿ ïîëåé row è col íåîòðèöàòåëüíû.
-// Position::NONE íåâàëèäíà.
+// ÐŸÑ€Ð¾Ð²ÐµÑ€ÑÐµÑ‚ Ð²Ð°Ð»Ð¸Ð´Ð½Ð¾ÑÑ‚ÑŒ Ð¿Ð¾Ð·Ð¸Ñ†Ð¸Ð¸,
+// Ñ‚Ð¾ ÐµÑÑ‚ÑŒ Ñ‡Ñ‚Ð¾ ÑÑ‡ÐµÐ¹ÐºÐ°(row, col) Ð½Ðµ Ð²Ñ‹Ñ…Ð¾Ð´Ð¸Ñ‚ Ð·Ð° Ð¾Ð³Ñ€Ð°Ð½Ð¸Ñ‡ÐµÐ½Ð¸Ñ Ð½Ð¸Ð¶Ðµ Ð¸ Ñ‡Ñ‚Ð¾ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ Ð¿Ð¾Ð»ÐµÐ¹ row Ð¸ col Ð½ÐµÐ¾Ñ‚Ñ€Ð¸Ñ†Ð°Ñ‚ÐµÐ»ÑŒÐ½Ñ‹.
+// Position::NONE Ð½ÐµÐ²Ð°Ð»Ð¸Ð´Ð½Ð°.
 bool Position::IsValid() const {
     return ((row >= 0 && row < MAX_ROWS) && (col >= 0 && col < MAX_COLS));
 }
 
-// Âîçâðàùàåò ñòðîêó — ïîçèöèþ â ôîðìàòå ïîëüçîâàòåëüñêîãî èíäåêñà.
-// åñëè ïîçèöèÿ íåâàëèäíà, ìåòîä äîëæåí âåðíóòü ïóñòóþ ñòðîêó.
+// Ð’Ð¾Ð·Ð²Ñ€Ð°Ñ‰Ð°ÐµÑ‚ ÑÑ‚Ñ€Ð¾ÐºÑƒ â€” Ð¿Ð¾Ð·Ð¸Ñ†Ð¸ÑŽ Ð² Ñ„Ð¾Ñ€Ð¼Ð°Ñ‚Ðµ Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»ÑŒÑÐºÐ¾Ð³Ð¾ Ð¸Ð½Ð´ÐµÐºÑÐ°.
+// ÐµÑÐ»Ð¸ Ð¿Ð¾Ð·Ð¸Ñ†Ð¸Ñ Ð½ÐµÐ²Ð°Ð»Ð¸Ð´Ð½Ð°, Ð¼ÐµÑ‚Ð¾Ð´ Ð´Ð¾Ð»Ð¶ÐµÐ½ Ð²ÐµÑ€Ð½ÑƒÑ‚ÑŒ Ð¿ÑƒÑÑ‚ÑƒÑŽ ÑÑ‚Ñ€Ð¾ÐºÑƒ.
 std::string Position::ToString() const { 
     if (!IsValid()) {
         return std::string();
@@ -43,15 +43,15 @@ std::string Position::ToString() const {
     return user_col + std::to_string(user_row);
 }
 
-// Âîçâðàùàåò ïîçèöèþ, ñîîòâåòñòâóþùóþ èíäåêñó, çàäàííîìó â str
+// Ð’Ð¾Ð·Ð²Ñ€Ð°Ñ‰Ð°ÐµÑ‚ Ð¿Ð¾Ð·Ð¸Ñ†Ð¸ÑŽ, ÑÐ¾Ð¾Ñ‚Ð²ÐµÑ‚ÑÑ‚Ð²ÑƒÑŽÑ‰ÑƒÑŽ Ð¸Ð½Ð´ÐµÐºÑÑƒ, Ð·Ð°Ð´Ð°Ð½Ð½Ð¾Ð¼Ñƒ Ð² str
 Position Position::FromString(std::string_view str) {
     std::regex pos_regex("^([A-Z]+)([0-9]+)$");
     std::smatch match;
 
     std::string str_copy(str);
 
-    // åñëè èíäåêñ çàäàí â íåâåðíîì ôîðìàòå — “abc”, “111”, “12jfd”, 
-    // òîãäà ôóíêöèÿ äîëæíà âåðíóòü äåôîëòíóþ ïîçèöèþ Position::NONE
+    // ÐµÑÐ»Ð¸ Ð¸Ð½Ð´ÐµÐºÑ Ð·Ð°Ð´Ð°Ð½ Ð² Ð½ÐµÐ²ÐµÑ€Ð½Ð¾Ð¼ Ñ„Ð¾Ñ€Ð¼Ð°Ñ‚Ðµ â€” â€œabcâ€, â€œ111â€, â€œ12jfdâ€, 
+    // Ñ‚Ð¾Ð³Ð´Ð° Ñ„ÑƒÐ½ÐºÑ†Ð¸Ñ Ð´Ð¾Ð»Ð¶Ð½Ð° Ð²ÐµÑ€Ð½ÑƒÑ‚ÑŒ Ð´ÐµÑ„Ð¾Ð»Ñ‚Ð½ÑƒÑŽ Ð¿Ð¾Ð·Ð¸Ñ†Ð¸ÑŽ Position::NONE
     if (std::regex_match(str_copy, match, pos_regex)) {
         std::string row_str = match[1].str();
         std::string col_str = match[2].str();
@@ -66,7 +66,7 @@ Position Position::FromString(std::string_view str) {
             }
         }
         const int row = std::stoull(col_str) - 1;
-        // åñëè èíäåäåêñ âûõîäèò çà ïðåäåëüíûå çíà÷åíèÿ
+        // ÐµÑÐ»Ð¸ Ð¸Ð½Ð´ÐµÐ´ÐµÐºÑ Ð²Ñ‹Ñ…Ð¾Ð´Ð¸Ñ‚ Ð·Ð° Ð¿Ñ€ÐµÐ´ÐµÐ»ÑŒÐ½Ñ‹Ðµ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ
         if (row >= 0 && row < MAX_ROWS && col >= 1 && col <= MAX_COLS) {
             Position pos;
             pos.row = row;

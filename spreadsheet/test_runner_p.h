@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <iostream>
 #include <map>
@@ -14,7 +14,7 @@ namespace TestRunnerPrivate {
   std::ostream& PrintMap(std::ostream& os, const Map<K, V>& m) {
     os << "{";
     bool first = true;
-    for (const auto& kv : m) {
+    for (const auto& kv : m) { 
       if (!first) {
         os << ", ";
       }

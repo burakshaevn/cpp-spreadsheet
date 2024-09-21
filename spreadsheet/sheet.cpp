@@ -1,4 +1,4 @@
-#include "sheet.h"
+п»ї#include "sheet.h"
 
 #include "cell.h"
 #include "common.h"
@@ -16,14 +16,14 @@ void Sheet::UpdateDependencies(Position pos, const std::vector<Position>& old_re
     std::unordered_set<Position> old_refs_set(old_refs.begin(), old_refs.end());
     std::unordered_set<Position> new_refs_set(new_refs.begin(), new_refs.end());
 
-    // удаляем зависимости, которые есть в старых ссылках, но отсутствуют в новых
+    // СѓРґР°Р»СЏРµРј Р·Р°РІРёСЃРёРјРѕСЃС‚Рё, РєРѕС‚РѕСЂС‹Рµ РµСЃС‚СЊ РІ СЃС‚Р°СЂС‹С… СЃСЃС‹Р»РєР°С…, РЅРѕ РѕС‚СЃСѓС‚СЃС‚РІСѓСЋС‚ РІ РЅРѕРІС‹С…
     for (const auto& ref : old_refs) {
         if (new_refs_set.find(ref) == new_refs_set.end()) {
             RemoveDependency(ref, pos);
         }
     }
 
-    // добавляем зависимости, которые есть в новых ссылках, но отсутствуют в старых
+    // РґРѕР±Р°РІР»СЏРµРј Р·Р°РІРёСЃРёРјРѕСЃС‚Рё, РєРѕС‚РѕСЂС‹Рµ РµСЃС‚СЊ РІ РЅРѕРІС‹С… СЃСЃС‹Р»РєР°С…, РЅРѕ РѕС‚СЃСѓС‚СЃС‚РІСѓСЋС‚ РІ СЃС‚Р°СЂС‹С…
     for (const auto& ref : new_refs) {
         if (old_refs_set.find(ref) == old_refs_set.end()) {
             AddDependency(ref, pos);
@@ -34,14 +34,14 @@ void Sheet::UpdateDependencies(Position pos, const std::vector<Position>& old_re
 void Sheet::AddDependency(Position from, Position to) {
     auto* cell = dynamic_cast<Cell*>(GetCell(from));
     if (cell) {
-        cell->AddDependentCell(to);  // добавление зависимой ячейки
+        cell->AddDependentCell(to);  // РґРѕР±Р°РІР»РµРЅРёРµ Р·Р°РІРёСЃРёРјРѕР№ СЏС‡РµР№РєРё
     }
 }
 
 void Sheet::RemoveDependency(Position from, Position to) {
     auto* cell = dynamic_cast<Cell*>(GetCell(from));
     if (cell) {
-        cell->RemoveDependentCell(to);  // удаление зависимой ячейки
+        cell->RemoveDependentCell(to);  // СѓРґР°Р»РµРЅРёРµ Р·Р°РІРёСЃРёРјРѕР№ СЏС‡РµР№РєРё
     }
 }   
 
@@ -54,7 +54,7 @@ void Sheet::SetCell(Position pos, std::string text) {
         try {
             auto formula_ast = ParseFormula(text.substr(1));
 
-            // проверка каждой ссылку на ячейку в формуле
+            // РїСЂРѕРІРµСЂРєР° РєР°Р¶РґРѕР№ СЃСЃС‹Р»РєСѓ РЅР° СЏС‡РµР№РєСѓ РІ С„РѕСЂРјСѓР»Рµ
             for (const auto& cell_ref : formula_ast->GetReferencedCells()) {
                 if (!IsValidPosition(cell_ref)) {
                     throw FormulaException("Invalid cell reference in formula");
@@ -86,7 +86,7 @@ void Sheet::SetCell(Position pos, std::string text) {
         throw;
     }
 
-    // проверка на циклические зависимости
+    // РїСЂРѕРІРµСЂРєР° РЅР° С†РёРєР»РёС‡РµСЃРєРёРµ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё
     std::unordered_set<Position> visited;
     std::unordered_set<Position> in_stack;
 
@@ -96,7 +96,7 @@ void Sheet::SetCell(Position pos, std::string text) {
         throw CircularDependencyException("Circular dependency detected");
     }
 
-    // обновление зависимостей
+    // РѕР±РЅРѕРІР»РµРЅРёРµ Р·Р°РІРёСЃРёРјРѕСЃС‚РµР№
     UpdateDependencies(pos, old_references, cell->GetReferencedCells());
 }
 
@@ -122,10 +122,10 @@ void Sheet::ClearCell(Position pos) {
 
     auto it = sheet_.find(pos);
     if (it != sheet_.end()) {
-        // очищаем ячейку
+        // РѕС‡РёС‰Р°РµРј СЏС‡РµР№РєСѓ
         it->second->Clear();
 
-        // проверяем, есть ли ссылки на эту ячейку из других ячеек
+        // РїСЂРѕРІРµСЂСЏРµРј, РµСЃС‚СЊ Р»Рё СЃСЃС‹Р»РєРё РЅР° СЌС‚Сѓ СЏС‡РµР№РєСѓ РёР· РґСЂСѓРіРёС… СЏС‡РµРµРє
         bool has_references = false;
         for (const auto& [key, cell] : sheet_) {
             if (!cell->GetReferencedCells().empty()) {
@@ -137,7 +137,7 @@ void Sheet::ClearCell(Position pos) {
             }
         }
 
-        // если на ячейку нет ссылок и она пустая, удаляем её
+        // РµСЃР»Рё РЅР° СЏС‡РµР№РєСѓ РЅРµС‚ СЃСЃС‹Р»РѕРє Рё РѕРЅР° РїСѓСЃС‚Р°СЏ, СѓРґР°Р»СЏРµРј РµС‘
         if (!has_references && it->second->GetText().empty()) {
             sheet_.erase(it);
         }
@@ -164,16 +164,16 @@ void Sheet::PrintValues(std::ostream& output) const {
     for (int row = 0; row < size.rows; ++row) {
         for (int col = 0; col < size.cols; ++col) {
             Position pos{ row, col };
-            const CellInterface* cell = GetCell(pos); // ячейка по позиции
+            const CellInterface* cell = GetCell(pos); // СЏС‡РµР№РєР° РїРѕ РїРѕР·РёС†РёРё
             if (cell) {
                 std::visit([&output](const auto& value) { output << value; }, cell->GetValue());
             }
 
             if (col < size.cols - 1) {
-                output << '\t';  // разделитель табуляции между столбцами
+                output << '\t';  // СЂР°Р·РґРµР»РёС‚РµР»СЊ С‚Р°Р±СѓР»СЏС†РёРё РјРµР¶РґСѓ СЃС‚РѕР»Р±С†Р°РјРё
             }
         }
-        output << '\n';  // перевод строки после каждой строки таблицы
+        output << '\n';  // РїРµСЂРµРІРѕРґ СЃС‚СЂРѕРєРё РїРѕСЃР»Рµ РєР°Р¶РґРѕР№ СЃС‚СЂРѕРєРё С‚Р°Р±Р»РёС†С‹
     }
 }
 void Sheet::PrintTexts(std::ostream& output) const {
@@ -181,16 +181,16 @@ void Sheet::PrintTexts(std::ostream& output) const {
     for (int row = 0; row < size.rows; ++row) {
         for (int col = 0; col < size.cols; ++col) {
             Position pos{ row, col };
-            const CellInterface* cell = GetCell(pos); // получаем ячейку по позиции
+            const CellInterface* cell = GetCell(pos); // РїРѕР»СѓС‡Р°РµРј СЏС‡РµР№РєСѓ РїРѕ РїРѕР·РёС†РёРё
             if (cell) {
                 output << cell->GetText();
             }
 
             if (col < size.cols - 1) {
-                output << '\t';  // разделитель табуляции между столбцами
+                output << '\t';  // СЂР°Р·РґРµР»РёС‚РµР»СЊ С‚Р°Р±СѓР»СЏС†РёРё РјРµР¶РґСѓ СЃС‚РѕР»Р±С†Р°РјРё
             }
         }
-        output << '\n';  // перевод строки после каждой строки таблицы
+        output << '\n';  // РїРµСЂРµРІРѕРґ СЃС‚СЂРѕРєРё РїРѕСЃР»Рµ РєР°Р¶РґРѕР№ СЃС‚СЂРѕРєРё С‚Р°Р±Р»РёС†С‹
     }
 }
 
@@ -204,11 +204,11 @@ std::unique_ptr<SheetInterface> CreateSheet() {
 
 bool Sheet::HasCircularDependency(Position pos, std::unordered_set<Position>& visited, std::unordered_set<Position>& in_stack) const {
     if (in_stack.count(pos)) {
-        return true;  // Обнаружен цикл
+        return true;  // РћР±РЅР°СЂСѓР¶РµРЅ С†РёРєР»
     }
 
     if (visited.count(pos)) {
-        return false;  // Ячейка уже проверена
+        return false;  // РЇС‡РµР№РєР° СѓР¶Рµ РїСЂРѕРІРµСЂРµРЅР°
     }
 
     visited.insert(pos);

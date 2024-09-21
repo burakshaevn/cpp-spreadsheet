@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "FormulaLexer.h"
 #include "common.h"

@@ -1,4 +1,4 @@
-#include <limits>
+ï»¿#include <limits>
 
 #include "common.h"
 #include "formula.h"
@@ -161,11 +161,11 @@ namespace {
         sheet->SetCell("A2"_pos, "2");
         ASSERT_EQUAL(evaluate("A1+A2"), 3);
 
-        // Òåñò íà íóëè:
+        // Ð¢ÐµÑÑ‚ Ð½Ð° Ð½ÑƒÐ»Ð¸:
         sheet->SetCell("B3"_pos, "");
-        ASSERT_EQUAL(evaluate("A1+B3"), 1);  // ß÷åéêà ñ ïóñòûì òåêñòîì
-        ASSERT_EQUAL(evaluate("A1+B1"), 1);  // Ïóñòàÿ ÿ÷åéêà
-        ASSERT_EQUAL(evaluate("A1+E4"), 1);  // ß÷åéêà çà ïðåäåëàìè òàáëèöû
+        ASSERT_EQUAL(evaluate("A1+B3"), 1);  // Ð¯Ñ‡ÐµÐ¹ÐºÐ° Ñ Ð¿ÑƒÑÑ‚Ñ‹Ð¼ Ñ‚ÐµÐºÑÑ‚Ð¾Ð¼
+        ASSERT_EQUAL(evaluate("A1+B1"), 1);  // ÐŸÑƒÑÑ‚Ð°Ñ ÑÑ‡ÐµÐ¹ÐºÐ°
+        ASSERT_EQUAL(evaluate("A1+E4"), 1);  // Ð¯Ñ‡ÐµÐ¹ÐºÐ° Ð·Ð° Ð¿Ñ€ÐµÐ´ÐµÐ»Ð°Ð¼Ð¸ Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñ‹
     }
 
     void TestFormulaExpressionFormatting() {
@@ -302,7 +302,7 @@ namespace {
         ASSERT_EQUAL(sheet->GetCell("A2"_pos)->GetReferencedCells(), std::vector{ "A1"_pos });
         ASSERT_EQUAL(sheet->GetCell("B2"_pos)->GetReferencedCells(), std::vector{ "A1"_pos });
 
-        // Ññûëêà íà ïóñòóþ ÿ÷åéêó
+        // Ð¡ÑÑ‹Ð»ÐºÐ° Ð½Ð° Ð¿ÑƒÑÑ‚ÑƒÑŽ ÑÑ‡ÐµÐ¹ÐºÑƒ
         sheet->SetCell("B2"_pos, "=B1");
         ASSERT(sheet->GetCell("B1"_pos)->GetReferencedCells().empty());
         ASSERT_EQUAL(sheet->GetCell("B2"_pos)->GetReferencedCells(), std::vector{ "B1"_pos });
@@ -311,7 +311,7 @@ namespace {
         ASSERT(sheet->GetCell("A1"_pos)->GetReferencedCells().empty());
         ASSERT(sheet->GetCell("A2"_pos)->GetReferencedCells().empty());
 
-        // Ññûëêà íà ÿ÷åéêó çà ïðåäåëàìè òàáëèöû
+        // Ð¡ÑÑ‹Ð»ÐºÐ° Ð½Ð° ÑÑ‡ÐµÐ¹ÐºÑƒ Ð·Ð° Ð¿Ñ€ÐµÐ´ÐµÐ»Ð°Ð¼Ð¸ Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñ‹
         sheet->SetCell("B1"_pos, "=C3");
         ASSERT_EQUAL(sheet->GetCell("B1"_pos)->GetReferencedCells(), std::vector{ "C3"_pos });
     }
