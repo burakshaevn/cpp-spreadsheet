@@ -19,15 +19,15 @@ public:
 
     Value GetValue() const override;
     std::string GetText() const override;
-    std::vector<Position> GetReferencedCells() const override; 
+    std::vector<Position> GetReferencedCells() const override;
 
     void InvalidateCache();
-    bool IsCacheValid() const; 
+    bool IsCacheValid() const;
 
     // методы будут работать с зависимостями
     void UpdateReferences(const std::vector<Position>& new_references);
     void AddDependentCell(Position pos);
-    void RemoveDependentCell(Position pos);  
+    void RemoveDependentCell(Position pos);
 
 private:
     class Impl;
@@ -44,4 +44,6 @@ private:
 
     std::vector<Position> referenced_cells_;   // // ячейки на которые ссылается эта ячейка
     std::vector<Position> dependent_cells_;    // ячейки которые зависят от этой ячейки
+
+    bool HasCircularDependency(Position pos, std::unordered_set<Position>& visited, std::unordered_set<Position>& in_stack) const;
 };

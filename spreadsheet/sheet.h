@@ -28,7 +28,5 @@ public:
 private:
     std::unordered_map<Position, std::unique_ptr<Cell>> sheet_;
 
-    bool HasCircularDependency(Position pos, std::unordered_set<Position>& visited, std::unordered_set<Position>& in_stack) const;
-
     bool IsValidPosition(const Position& pos) const;
 };

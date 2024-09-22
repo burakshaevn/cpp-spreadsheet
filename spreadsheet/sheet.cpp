@@ -8,9 +8,9 @@
 #include <iostream>
 #include <optional>
 
-using namespace std::literals; 
+using namespace std::literals;
 
-Sheet::~Sheet() = default; 
+Sheet::~Sheet() = default;
 
 void Sheet::UpdateDependencies(Position pos, const std::vector<Position>& old_refs, const std::vector<Position>& new_refs) {
     std::unordered_set<Position> old_refs_set(old_refs.begin(), old_refs.end());
@@ -43,18 +43,15 @@ void Sheet::RemoveDependency(Position from, Position to) {
     if (cell) {
         cell->RemoveDependentCell(to);  // удаление зависимой ячейки
     }
-}   
+}
 
 void Sheet::SetCell(Position pos, std::string text) {
     if (!IsValidPosition(pos)) {
         throw InvalidPositionException("Invalid position");
     }
-
     if (text[0] == '=') {
         try {
             auto formula_ast = ParseFormula(text.substr(1));
-
-            // проверка каждой ссылку на ячейку в формуле
             for (const auto& cell_ref : formula_ast->GetReferencedCells()) {
                 if (!IsValidPosition(cell_ref)) {
                     throw FormulaException("Invalid cell reference in formula");
@@ -68,7 +65,6 @@ void Sheet::SetCell(Position pos, std::string text) {
             throw;
         }
     }
-
     Cell* cell = dynamic_cast<Cell*>(GetCell(pos));
     if (!cell) {
         sheet_[pos] = std::make_unique<Cell>(*this);
@@ -79,26 +75,22 @@ void Sheet::SetCell(Position pos, std::string text) {
     auto old_references = cell->GetReferencedCells();
 
     try {
-        cell->Set(std::move(text));
+        cell->Set(std::move(text)); 
     }
     catch (const FormulaException& e) {
         cell->Set(std::move(old_text));
         throw;
     }
-
-    // проверка на циклические зависимости
-    std::unordered_set<Position> visited;
-    std::unordered_set<Position> in_stack;
-
-    if (HasCircularDependency(pos, visited, in_stack)) {
+    catch (const CircularDependencyException& e) {
         cell->Set(std::move(old_text));
-        cell->UpdateReferences(old_references);
-        throw CircularDependencyException("Circular dependency detected");
+        cell->UpdateReferences(old_references); // Вернуть старые зависимости
+        throw;
     }
 
-    // обновление зависимостей
+    // Обновление зависимостей в таблице
     UpdateDependencies(pos, old_references, cell->GetReferencedCells());
 }
+
 
 const CellInterface* Sheet::GetCell(Position pos) const {
     if (!IsValidPosition(pos)) {
@@ -142,7 +134,7 @@ void Sheet::ClearCell(Position pos) {
             sheet_.erase(it);
         }
     }
-} 
+}
 
 Size Sheet::GetPrintableSize() const {
     if (sheet_.empty()) {
@@ -151,7 +143,7 @@ Size Sheet::GetPrintableSize() const {
     int max_row = 0;
     int max_col = 0;
     for (const auto& [pos, cell] : sheet_) {
-        if (!cell->GetText().empty()) { 
+        if (!cell->GetText().empty()) {
             max_row = std::max(max_row, pos.row + 1);
             max_col = std::max(max_col, pos.col + 1);
         }
@@ -200,31 +192,4 @@ bool Sheet::IsValidPosition(const Position& pos) const {
 
 std::unique_ptr<SheetInterface> CreateSheet() {
     return std::make_unique<Sheet>();
-}
-
-bool Sheet::HasCircularDependency(Position pos, std::unordered_set<Position>& visited, std::unordered_set<Position>& in_stack) const {
-    if (in_stack.count(pos)) {
-        return true;  // Обнаружен цикл
-    }
-
-    if (visited.count(pos)) {
-        return false;  // Ячейка уже проверена
-    }
-
-    visited.insert(pos);
-    in_stack.insert(pos);
-
-    const CellInterface* cell = GetCell(pos);
-    if (cell) {
-        for (const auto& ref_pos : cell->GetReferencedCells()) {
-            if (IsValidPosition(ref_pos)) {
-                if (HasCircularDependency(ref_pos, visited, in_stack)) {
-                    return true;
-                }
-            }
-        }
-    }
-
-    in_stack.erase(pos);
-    return false;
 }

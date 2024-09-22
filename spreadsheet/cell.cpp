@@ -29,7 +29,7 @@ public:
     explicit TextImpl(std::string text) : text_(std::move(text)) {}
 
     CellInterface::Value GetValue() const override {
-        if (!text_.empty() && text_.front() == ESCAPE_SIGN) {  // ESCAPE_SIGN должна быть определена
+        if (!text_.empty() && text_.front() == ESCAPE_SIGN) {
             return text_.substr(1);
         }
         return text_;
@@ -101,6 +101,18 @@ void Cell::Set(std::string text) {
     }
     else if (!text.empty() && text.front() == FORMULA_SIGN) {
         impl_ = std::make_unique<FormulaImpl>(std::move(text), sheet_);
+
+        auto new_references = GetReferencedCells();
+        std::unordered_set<Position> visited;
+        std::unordered_set<Position> in_stack;
+
+        for (const auto& ref : new_references) {
+            if (HasCircularDependency(ref, visited, in_stack)) {
+                throw CircularDependencyException("Circular dependency detected in cell.");
+            }
+        }
+
+        UpdateReferences(new_references);
     }
     else {
         impl_ = std::make_unique<TextImpl>(std::move(text));
@@ -108,7 +120,7 @@ void Cell::Set(std::string text) {
 }
 
 void Cell::Clear() {
-    impl_ = std::make_unique<EmptyImpl>();
+    Set("");
 }
 
 CellInterface::Value Cell::GetValue() const {
@@ -124,7 +136,7 @@ std::vector<Position> Cell::GetReferencedCells() const {
         return formula_impl->GetReferencedCells();
     }
     return {};
-} 
+}
 
 // методы будут работать с зависимостями
 void Cell::InvalidateCache() {
@@ -142,7 +154,7 @@ void Cell::InvalidateCache() {
 
 bool Cell::IsCacheValid() const {
     return cache_.has_value();
-} 
+}
 
 void Cell::UpdateReferences(const std::vector<Position>& new_references) {
     referenced_cells_ = new_references;
@@ -164,4 +176,31 @@ void Cell::RemoveDependentCell(Position pos) {
             cell->referenced_cells_.erase(it);  // Удаляем элемент по итератору
         }
     }
+}
+
+bool Cell::HasCircularDependency(Position pos, std::unordered_set<Position>& visited, std::unordered_set<Position>& in_stack) const {
+    if (in_stack.count(pos)) {
+        return true;  // Обнаружен цикл
+    }
+
+    if (visited.count(pos)) {
+        return false;  // Ячейка уже проверена
+    }
+
+    visited.insert(pos);
+    in_stack.insert(pos);
+
+    const CellInterface* cell = sheet_.GetCell(pos);
+    if (cell) {
+        for (const auto& ref_pos : cell->GetReferencedCells()) {
+            if (ref_pos.IsValid()) {
+                if (HasCircularDependency(ref_pos, visited, in_stack)) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    in_stack.erase(pos);
+    return false;
 }
