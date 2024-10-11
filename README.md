@@ -89,10 +89,8 @@ std::cout << std::get<double>(sheet->GetCell("B1"_pos)->GetValue()) << std::endl
 ```
 </details>
 <details>
-<summary>Пример 4. Более сложный пример</summary>
-
-Формулы автоматически форматируются при вводе, а ссылки на ячейки могут повторяться.
-
+<summary>Пример 4. Более сложный пример</summary> 
+   
 ```cpp
  auto sheet = CreateSheet();
 
