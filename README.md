@@ -87,7 +87,34 @@ std::cout << std::get<double>(sheet->GetCell("B1"_pos)->GetValue()) << std::endl
 >> =2+2
 >> 8
 ```
+</details>
+<details>
+<summary>Пример 4. Более сложный пример</summary>
 
+Формулы автоматически форматируются при вводе, а ссылки на ячейки могут повторяться.
+
+```cpp
+ auto sheet = CreateSheet();
+
+ sheet->SetCell("A1"_pos, "5");
+ sheet->SetCell("A2"_pos, "3");
+ sheet->SetCell("A3"_pos, "7");
+
+ sheet->SetCell("B1"_pos, "=A1 * A2 + A3");       
+ sheet->SetCell("B2"_pos, "=(A1 + A2) / A3");     
+ sheet->SetCell("B3"_pos, "=B1 * B2 - A1");          
+ sheet->SetCell("B4"_pos, "=B3 + (A2 - A3) * 2");    
+
+ // комбинируем несколько ячеек в одну формулу
+ sheet->SetCell("C1"_pos, "=A1 + B1 + B2 + B3 + B4");  
+ 
+ // выводим её значение
+ std::cout << std::get<double>(sheet->GetCell("C1"_pos)->GetValue()) << std::endl;
+```
+Выходной поток. Результат может отличаться из за особенностей округления. 
+```
+>> 60.4286
+```
 </details>
 
 ## Сборка и запуск
